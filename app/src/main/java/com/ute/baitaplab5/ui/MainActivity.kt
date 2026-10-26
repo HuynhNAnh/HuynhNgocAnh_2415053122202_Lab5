@@ -6,6 +6,7 @@ import android.os.SystemClock
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import androidx.core.widget.doAfterTextChanged
 import com.ute.baitaplab5.R
 import com.ute.baitaplab5.databinding.ActivityMainBinding
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         setupClickDebounce()
         setupRealtimeValidation()
         setupSelectionListeners()
+        setupCancelButton()
     }
 
     private fun setupClickDebounce() {
@@ -59,7 +61,40 @@ class MainActivity : AppCompatActivity() {
                     putExtra("gender", user.gender)
                 }
                 startActivity(intent)
+            } else {
+                Snackbar.make(binding.root, "Đăng ký thất bại! Vui lòng kiểm tra lại thông tin.", Snackbar.LENGTH_LONG)
+                    .setAction("Đã hiểu") {}
+                    .show()
             }
+        }
+    }
+
+    private fun setupCancelButton() {
+        binding.btnCancel.setOnClickListener {
+            binding.etFullName.text?.clear()
+            binding.etEmail.text?.clear()
+            binding.etPassword.text?.clear()
+            binding.etPhone.text?.clear()
+
+            binding.tilFullName.error = null
+            binding.tilFullName.isErrorEnabled = false
+            binding.tilEmail.error = null
+            binding.tilEmail.isErrorEnabled = false
+            binding.tilPassword.error = null
+            binding.tilPassword.isErrorEnabled = false
+            binding.tilPhone.error = null
+            binding.tilPhone.isErrorEnabled = false
+
+            binding.rgGender.clearCheck()
+            binding.cbTerms.isChecked = false
+            binding.btnSubmit.isEnabled = false
+
+            binding.etFullName.clearFocus()
+            binding.etEmail.clearFocus()
+            binding.etPassword.clearFocus()
+            binding.etPhone.clearFocus()
+
+            Snackbar.make(binding.root, "Đã làm mới dữ liệu biểu mẫu", Snackbar.LENGTH_SHORT).show()
         }
     }
 
