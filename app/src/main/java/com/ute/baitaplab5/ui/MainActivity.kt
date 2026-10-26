@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             lastClickTime = currentTime
-            
+
             if (validateForm()) {
                 Toast.makeText(this, "Đã tiếp nhận yêu cầu!", Toast.LENGTH_SHORT).show()
 
