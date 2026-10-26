@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.ute.baitaplab5.R
 import com.ute.baitaplab5.databinding.ActivityMainBinding
+import com.ute.baitaplab5.valid.FormValid
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,9 +38,22 @@ class MainActivity : AppCompatActivity() {
             }
             lastClickTime = currentTime
 
-            Toast.makeText(this, "Đã tiếp nhận yêu cầu!", Toast.LENGTH_SHORT).show()
+            if (validateForm()) {
+                Toast.makeText(this, "Đã tiếp nhận yêu cầu!", Toast.LENGTH_SHORT).show()
 
-            // Tạo Intent và chuyển màn hình tại đây
+                val intent = Intent(this, Detail::class.java).apply {
+                    putExtra("name", binding.etFullName.text.toString().trim())
+                    putExtra("email", binding.etEmail.text.toString().trim())
+                    putExtra("phone", binding.etPhone.text.toString().trim())
+                    putExtra("gender", when (binding.rgGender.checkedRadioButtonId) {
+                        R.id.rbMale -> "Nam"
+                        R.id.rbFemale -> "Nữ"
+                        else -> "Khác"
+                    })
+                }
+                startActivity(intent)
+            }
+
             val intent = Intent(this, Detail::class.java).apply {
                 putExtra("name", binding.etFullName.text.toString())
                 putExtra("email", binding.etEmail.text.toString())
@@ -52,8 +66,36 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+    private fun validateForm(): Boolean {
+        var isValid = true
 
-    // Bài 2: Tự động xóa lỗi khi người dùng nhập ký tự
+        val name = binding.etFullName.text.toString()
+        val email = binding.etEmail.text.toString()
+        val password = binding.etPassword.text.toString()
+        val phone = binding.etPhone.text.toString()
+
+        if (!FormValid.isValidName(name)) {
+            binding.tilFullName.error = "Họ tên không được để trống và tối thiểu 3 ký tự"
+            isValid = false
+        }
+
+        if (!FormValid.isValidEmail(email)) {
+            binding.tilEmail.error = "Email phải đúng định dạng (@ute.vn, @gmail.com,...)"
+            isValid = false
+        }
+
+        if (!FormValid.isValidPassword(password)) {
+            binding.tilPassword.error = "Mật khẩu tối thiểu 6 ký tự, gồm cả chữ và số"
+            isValid = false
+        }
+
+        if (!FormValid.isValidPhone(phone)) {
+            binding.tilPhone.error = "SĐT phải gồm 10 chữ số và bắt đầu bằng 03, 05, 07, 08, 09"
+            isValid = false
+        }
+
+        return isValid
+    }
     private fun setupRealtimeValidation() {
         binding.etFullName.doAfterTextChanged {
             if (binding.tilFullName.error != null) {
@@ -75,9 +117,14 @@ class MainActivity : AppCompatActivity() {
                 binding.tilPassword.isErrorEnabled = false
             }
         }
+        binding.etPhone.doAfterTextChanged {
+            if (binding.tilPhone.error != null) {
+                binding.tilPhone.error = null
+                binding.tilPhone.isErrorEnabled = false
+            }
+        }
     }
 
-    // Bài 3: Bắt sự kiện RadioGroup và CheckBox
     private fun setupSelectionListeners() {
         binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
             val gender = when (checkedId) {

@@ -14,6 +14,7 @@ class Detail : AppCompatActivity() {
         setContentView(binding.root)
         binding.tvDetailFullName.text = intent.getStringExtra("name")
         binding.tvDetailEmail.text = intent.getStringExtra("email")
+        binding.tvDetailPhone.text = intent.getStringExtra("phone")
         binding.tvDetailGender.text = intent.getStringExtra("gender")
 
         binding.btnBack.setOnClickListener {
