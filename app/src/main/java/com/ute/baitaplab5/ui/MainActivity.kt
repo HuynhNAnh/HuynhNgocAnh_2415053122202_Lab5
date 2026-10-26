@@ -34,6 +34,38 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Đã tiếp nhận yêu cầu!", Toast.LENGTH_SHORT).show()
         }
     }
-    
+    private fun setupRealtimeValidation() {
+        binding.etFullName.doAfterTextChanged {
+            if (binding.tilFullName.error != null) {
+                binding.tilFullName.error = null
+                binding.tilFullName.isErrorEnabled = false
+            }
+        }
+        binding.etEmail.doAfterTextChanged {
+            if (binding.tilEmail.error != null) {
+                binding.tilEmail.error = null
+                binding.tilEmail.isErrorEnabled = false
+            }
+        }
+        binding.etPassword.doAfterTextChanged {
+            if (binding.tilPassword.error != null) {
+                binding.tilPassword.error = null
+                binding.tilPassword.isErrorEnabled = false
+            }
+        }
+    }
+    private fun setupSelectionListeners() {
+        binding.rgGender.setOnCheckedChangeListener { _, checkedId ->
+            val gender = when (checkedId) {
+                R.id.rbMale -> "Nam"
+                R.id.rbFemale -> "Nữ"
+                else -> "Khác"
+            }
+            Log.d("Register", "Giới tính đã chọn: $gender")
+        }
+
+        binding.cbTerms.setOnCheckedChangeListener { _, isChecked ->
+            binding.btnSubmit.isEnabled = isChecked
+        }
     }
 }
