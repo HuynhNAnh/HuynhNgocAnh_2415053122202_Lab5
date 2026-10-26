@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.ute.baitaplab5.R
 import com.ute.baitaplab5.databinding.ActivityMainBinding
+import com.ute.baitaplab5.model.User
 import com.ute.baitaplab5.valid.FormValid
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         setupSelectionListeners()
     }
 
-    // Bài 1: Chống click đúp và gửi dữ liệu sang màn hình Detail
     private fun setupClickDebounce() {
         binding.btnSubmit.setOnClickListener {
             val currentTime = SystemClock.elapsedRealtime()
@@ -37,42 +37,39 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             lastClickTime = currentTime
-
+            
             if (validateForm()) {
                 Toast.makeText(this, "Đã tiếp nhận yêu cầu!", Toast.LENGTH_SHORT).show()
 
-                val intent = Intent(this, Detail::class.java).apply {
-                    putExtra("name", binding.etFullName.text.toString().trim())
-                    putExtra("email", binding.etEmail.text.toString().trim())
-                    putExtra("phone", binding.etPhone.text.toString().trim())
-                    putExtra("gender", when (binding.rgGender.checkedRadioButtonId) {
+                val user = User(
+                    name = binding.etFullName.text.toString().trim(),
+                    email = binding.etEmail.text.toString().trim(),
+                    phone = binding.etPhone.text.toString().trim(),
+                    gender = when (binding.rgGender.checkedRadioButtonId) {
                         R.id.rbMale -> "Nam"
                         R.id.rbFemale -> "Nữ"
                         else -> "Khác"
-                    })
+                    }
+                )
+
+                val intent = Intent(this, Detail::class.java).apply {
+                    putExtra("name", user.name)
+                    putExtra("email", user.email)
+                    putExtra("phone", user.phone)
+                    putExtra("gender", user.gender)
                 }
                 startActivity(intent)
             }
-
-            val intent = Intent(this, Detail::class.java).apply {
-                putExtra("name", binding.etFullName.text.toString())
-                putExtra("email", binding.etEmail.text.toString())
-                putExtra("gender", when (binding.rgGender.checkedRadioButtonId) {
-                    R.id.rbMale -> "Nam"
-                    R.id.rbFemale -> "Nữ"
-                    else -> "Khác"
-                })
-            }
-            startActivity(intent)
         }
     }
+
     private fun validateForm(): Boolean {
         var isValid = true
 
-        val name = binding.etFullName.text.toString()
-        val email = binding.etEmail.text.toString()
-        val password = binding.etPassword.text.toString()
-        val phone = binding.etPhone.text.toString()
+        val name = binding.etFullName.text.toString().trim()
+        val email = binding.etEmail.text.toString().trim()
+        val password = binding.etPassword.text.toString().trim()
+        val phone = binding.etPhone.text.toString().trim()
 
         if (!FormValid.isValidName(name)) {
             binding.tilFullName.error = "Họ tên không được để trống và tối thiểu 3 ký tự"
@@ -96,6 +93,7 @@ class MainActivity : AppCompatActivity() {
 
         return isValid
     }
+
     private fun setupRealtimeValidation() {
         binding.etFullName.doAfterTextChanged {
             if (binding.tilFullName.error != null) {
@@ -117,6 +115,7 @@ class MainActivity : AppCompatActivity() {
                 binding.tilPassword.isErrorEnabled = false
             }
         }
+
         binding.etPhone.doAfterTextChanged {
             if (binding.tilPhone.error != null) {
                 binding.tilPhone.error = null
